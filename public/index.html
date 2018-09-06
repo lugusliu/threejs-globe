@@ -15,10 +15,6 @@
         background-image: linear-gradient(135deg, #029797, #003073);
         height: 100%;
       }
-      canvas {
-        margin: 0;
-        padding: 0;
-      }
     </style>
   </head>
   <body>
@@ -35,18 +31,8 @@
       Detector.addGetWebGLMessage();
     } else {
       var container = document.getElementById('container');
-      var globe = new DAT.Globe(container);
-      var tweens = [];
-      
-      var settime = function(globe) {
-        return function() {
-          new TWEEN.Tween(globe).to({time: 0}, 500).easing(TWEEN.Easing.Cubic.EaseOut).start();
-        };
-      };
-      
+      var globe = new DAT.Globe(container);      
       var xhr;
-      TWEEN.start();
-      
       xhr = new XMLHttpRequest();
       xhr.open('GET', './globe/population909500.json', true);
       xhr.onreadystatechange = function(e) {
@@ -56,7 +42,6 @@
             window.data = data;
             globe.addData(data[0][1], {format: 'magnitude', name: data[0][0], animated: true});
             globe.createPoints();
-            // settime(globe)();
             globe.animate();
           }
         }

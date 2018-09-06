@@ -31,7 +31,7 @@ DAT.Globe = function(container, opts) {
       target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
-  var distance = 300; // camera z axis postion
+  var distance = 1000; // camera z axis postion
 
   var padding = 40;
 
@@ -46,9 +46,9 @@ DAT.Globe = function(container, opts) {
     camera.position.z = distance;
 
     scene = new THREE.Scene();
-    // scene.background = new THREE.Color( 0x0b347f ); // scene background color
+    scene.fog = new THREE.Fog( 0x0099cc, -250, 250 );
 
-    var geometry = new THREE.SphereBufferGeometry(200, 40, 30);
+    var geometry = new THREE.SphereBufferGeometry(200, 40, 100);
 
     material = new THREE.MeshStandardMaterial({
       opacity: params.opacity,
