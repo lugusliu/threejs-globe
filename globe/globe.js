@@ -78,12 +78,6 @@ DAT.Globe = function(container, opts) {
           addPoint(lat, lng, color, this._baseGeometry); 
         }
       }
-      if(this._morphTargetId === undefined) {
-        this._morphTargetId = 0;
-      } else {
-        this._morphTargetId += 1;
-      }
-      opts.name = opts.name || 'morphTarget'+this._morphTargetId;
     }
     var subgeo = new THREE.Geometry();
     for (i = 0; i < data.length; i += 3) {
@@ -92,18 +86,10 @@ DAT.Globe = function(container, opts) {
       color = earthColor;
       addPoint(lat, lng, color, subgeo);
     }
-    this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
   };
 
   function createPoints() {
     if (this._baseGeometry !== undefined) {
-      if (this._baseGeometry.morphTargets.length < 8) {
-        var padding = 8-this._baseGeometry.morphTargets.length;
-        for(var i=0; i<=padding; i++) {
-          this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
-        }
-      }
-      console.log(this._baseGeometry.morphTargets.length);
       this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
         color: 0x99cccc,
         vertexColors: THREE.FaceColors,
@@ -117,9 +103,9 @@ DAT.Globe = function(container, opts) {
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
 
-    point.position.x = 50 * Math.sin(phi) * Math.cos(theta);
-    point.position.y = 50 * Math.cos(phi);
-    point.position.z = 50 * Math.sin(phi) * Math.sin(theta);
+    point.position.x = 55 * Math.sin(phi) * Math.cos(theta);
+    point.position.y = 55 * Math.cos(phi);
+    point.position.z = 55 * Math.sin(phi) * Math.sin(theta);
 
     point.lookAt(mesh.position);
 
@@ -171,35 +157,6 @@ DAT.Globe = function(container, opts) {
 
   init();
   this.animate = animate;
-
-  // this.__defineGetter__('time', function() {
-  //   return this._time || 0;
-  // });
-
-  // this.__defineSetter__('time', function(t) {
-  //   var validMorphs = [];
-  //   var morphDict = this.points.morphTargetDictionary;
-  //   for(var k in morphDict) {
-  //     if(k.indexOf('morphPadding') < 0) {
-  //       validMorphs.push(morphDict[k]);
-  //     }
-  //   }
-  //   validMorphs.sort();
-  //   var l = validMorphs.length-1;
-  //   var scaledt = t*l+1;
-  //   var index = Math.floor(scaledt);
-  //   for (i=0;i<validMorphs.length;i++) {
-  //     this.points.morphTargetInfluences[validMorphs[i]] = 0;
-  //   }
-  //   var lastIndex = index - 1;
-  //   var leftover = scaledt - index;
-  //   if (lastIndex >= 0) {
-  //     this.points.morphTargetInfluences[lastIndex] = 1 - leftover;
-  //   }
-  //   this.points.morphTargetInfluences[index] = leftover;
-  //   this._time = t;
-  // });
-
   this.addData = addData;
   this.createPoints = createPoints;
   this.renderer = renderer;
