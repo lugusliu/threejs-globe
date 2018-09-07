@@ -35,7 +35,7 @@ DAT.Globe = function(container, opts) {
     scene.fog = new THREE.Fog( 0x215b71, 160, 300 );
 
     var geometry = new THREE.SphereBufferGeometry(50, 40, 100);
-    var geometry1 = new THREE.RingGeometry( 66, 66.5, 100 );
+    var geometry1 = new THREE.RingGeometry( 66, 67, 100 );
 
     material = new THREE.MeshStandardMaterial({
       opacity: params.opacity,
