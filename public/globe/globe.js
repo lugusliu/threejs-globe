@@ -1,24 +1,12 @@
-/**
- * dat.globe Javascript WebGL Globe Toolkit
- * https://github.com/dataarts/webgl-globe
- *
- * Copyright 2011 Data Arts Team, Google Creative Lab
- *
- * Licensed under the Apache License, Version 2.0 (the 'License');
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-
 var DAT = DAT || {};
 
 DAT.Globe = function(container, opts) {
   opts = opts || {};
 
-  var earthColor = new THREE.Color(0x3399ff);
+  var earthColor = new THREE.Color(0x66ccff);
+  var earthColor1 = new THREE.Color(0x66ffcc);
 
-  var params = { opacity: 0.10 };
+  var params = { opacity: 0.1 };
 
   var camera, scene, renderer, w, h;
   var mesh, point;
@@ -31,8 +19,6 @@ DAT.Globe = function(container, opts) {
       target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
-  var distance = 1000; // camera z axis postion
-
   var padding = 40;
 
   var PI_HALF = Math.PI / 2;
@@ -43,23 +29,35 @@ DAT.Globe = function(container, opts) {
     h = container.offsetHeight || window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(30, w / h, 1, 10000);
-    camera.position.z = distance;
+    camera.position.z = 250;
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog( 0x0099cc, -250, 250 );
+    scene.fog = new THREE.Fog( 0x215b71, 160, 300 );
 
-    var geometry = new THREE.SphereBufferGeometry(200, 40, 100);
+    var geometry = new THREE.SphereBufferGeometry(50, 40, 100);
+    var geometry1 = new THREE.RingGeometry( 66, 66.5, 100 );
 
     material = new THREE.MeshStandardMaterial({
       opacity: params.opacity,
       transparent: true
     });
 
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    material1 = new THREE.MeshBasicMaterial({
+      color: 0x6699cc,
+      side: THREE.DoubleSide
+    });
 
-    geometry = new THREE.BoxGeometry(1, 1, 1);
-    geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, -1.5));
+    mesh = new THREE.Mesh(geometry, material);
+    ring = new THREE.Mesh(geometry1, material1);
+    ring.rotation.x = -Math.PI / 2;
+    scene.add(mesh);
+    scene.add(ring);
+
+    scene.position.set(30, 0, 0);
+    scene.rotation.x = Math.PI / 6;
+
+    geometry = new THREE.BoxGeometry(0.35, 0.35, 1);
+    geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, -0.25));
 
     point = new THREE.Mesh(geometry);
 
@@ -73,19 +71,16 @@ DAT.Globe = function(container, opts) {
   }
 
   function addData(data, opts) {
-    var lat, lng, size, color, i, step, colorFnWrapper;
+    var lat, lng, size, color, color1, i, step;
 
     opts.animated = opts.animated || false;
     this.is_animated = opts.animated;
     opts.format = opts.format || 'magnitude'; // other option is 'legend'
     if (opts.format === 'magnitude') {
       step = 3;
-    } else if (opts.format === 'legend') {
-      step = 4;
     } else {
       throw('error: format not supported: '+opts.format);
     }
-
     if (opts.animated) {
       if (this._baseGeometry === undefined) {
         this._baseGeometry = new THREE.Geometry();
@@ -94,8 +89,7 @@ DAT.Globe = function(container, opts) {
           lng = data[i + 1];
           size = data[i + 2];
           color = earthColor;
-          size = 0;
-          addPoint(lat, lng, 2, color, this._baseGeometry);
+          addPoint(lat, lng, 0.5, color, this._baseGeometry); 
         }
       }
       if(this._morphTargetId === undefined) {
@@ -109,16 +103,11 @@ DAT.Globe = function(container, opts) {
     for (i = 0; i < data.length; i += step) {
       lat = data[i];
       lng = data[i + 1];
-      color = earthColor;
       size = data[i + 2];
-      size = size*200;
-      addPoint(lat, lng, 10, color, subgeo);
+      color = earthColor;
+      addPoint(lat, lng, 0.5, color, subgeo);
     }
-    if (opts.animated) {
-      this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
-    } else {
-      this._baseGeometry = subgeo;
-    }
+    this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
   };
 
   function createPoints() {
@@ -136,8 +125,9 @@ DAT.Globe = function(container, opts) {
             this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
           }
         }
+        console.log(this._baseGeometry.morphTargets.length);
         this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
-          color: 0xffffff,
+          color: 0x99cccc,
           vertexColors: THREE.FaceColors,
           morphTargets: true
         }));
@@ -150,9 +140,9 @@ DAT.Globe = function(container, opts) {
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
 
-    point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
-    point.position.y = 200 * Math.cos(phi);
-    point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
+    point.position.x = 50 * Math.sin(phi) * Math.cos(theta);
+    point.position.y = 50 * Math.cos(phi);
+    point.position.z = 50 * Math.sin(phi) * Math.sin(theta);
 
     point.lookAt(mesh.position);
 
@@ -170,12 +160,9 @@ DAT.Globe = function(container, opts) {
 
   function onMouseDown(event) {
     event.preventDefault();
-
     console.log('clicked');
-
     mouseOnDown.x = - event.clientX;
     mouseOnDown.y = event.clientY;
-
     targetOnDown.x = target.x;
     targetOnDown.y = target.y;
     container.style.cursor = 'point';
@@ -199,12 +186,12 @@ DAT.Globe = function(container, opts) {
   function render() {
     camera.lookAt(0, 0, 0);
 
-    scene.position.set(200, 0, 0);
-    scene.rotation.x = Math.PI / 12;
-
-    scene.rotation.x += Math.PI / 1800;
+    if (scene.rotation.x > Math.PI / 4) {
+      scene.rotation.x -= Math.PI / 5400;
+    } else {
+      scene.rotation.x += Math.PI / 5400;
+    }
     scene.rotation.y += Math.PI / 1800;
-
     renderer.render(scene, camera);
   }
 
