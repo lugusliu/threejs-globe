@@ -1,6 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>WebGL Globe</title>
     <meta charset="utf-8">
     <style>
@@ -20,11 +23,10 @@
   <body>
   <div id="container"></div>
 
-  <div>Blalalalalallalalalalal</div>
+  <div>emmmmmmmmmm</div>
 
   <script type="text/javascript" src="./globe/third-party/Detector.js"></script>
   <script type="text/javascript" src="./globe/third-party/three.min.js"></script>
-  <script type="text/javascript" src="./globe/third-party/Tween.js"></script>
   <script type="text/javascript" src="./globe/globe.js"></script>
   <script type="text/javascript">
     if(!Detector.webgl){
@@ -40,7 +42,7 @@
           if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
             window.data = data;
-            globe.addData(data[0][1], {format: 'magnitude', name: data[0][0], animated: true});
+            globe.addData(data[0][1], {name: data[0][0], animated: true});
             globe.createPoints();
             globe.animate();
           }
